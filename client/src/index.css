@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary:     #F6F8FB;
+  --bg-secondary:   #FFFFFF;
+  --bg-tertiary:    #F1F5F9;
+  --bg-elevated:    #EAF0F7;
+  --accent-blue:    #4F8EF7;
+  --accent-purple:  #8B5CF6;
+  --accent-cyan:    #22D3EE;
+  --accent-green:   #3FB950;
+  --accent-orange:  #FB8F44;
+  --accent-red:     #F85149;
+  --text-primary:   #0F172A;
+  --text-secondary: #475569;
+  --text-muted:     #64748B;
+  --border:         #D9E2EC;
+  --border-subtle:  #EAF0F7;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #F6F8FB;
+  color: #0F172A;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root { min-height: 100vh; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+@layer components {
+  .card { @apply bg-[#FFFFFF] border border-[#D9E2EC] rounded-xl shadow-card; }
+  .card-elevated { @apply bg-[#F8FAFC] border border-[#D9E2EC] rounded-xl shadow-card; }
+  .card-hover { @apply card transition-all duration-200 hover:border-[#B8C8DB] hover:bg-[#F8FAFC] cursor-pointer; }
+  .glass-card { @apply card p-5; }
+  .glass-card-hover { @apply card-hover p-5; }
+
+  .gradient-text { @apply bg-clip-text text-transparent bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6]; }
+  .section-title { @apply text-base font-semibold text-[#0F172A] tracking-tight; }
+  .page-title    { @apply font-heading text-2xl font-bold text-[#0F172A] tracking-tight; }
+  .label-sm      { @apply text-xs font-medium text-[#64748B] uppercase tracking-wide; }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-[#4F8EF7] hover:bg-[#5C97F8] text-white text-sm font-semibold rounded-lg
+           transition-all duration-150 active:scale-[0.97]
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+  .btn-secondary {
+        @apply px-4 py-2 bg-transparent border border-[#D9E2EC] text-[#0F172A] text-sm font-semibold rounded-lg
+          hover:bg-[#F1F5F9] hover:border-[#B8C8DB]
+           transition-all duration-150 active:scale-[0.97]
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+        @apply px-3 py-1.5 text-sm font-medium text-[#64748B] rounded-md
+          hover:text-[#0F172A] hover:bg-[#F1F5F9]
+           transition-all duration-150;
+  }
+  .btn-danger {
+    @apply px-4 py-2 bg-[#F85149]/10 border border-[#F85149]/30 text-[#F85149] text-sm font-semibold rounded-lg
+           hover:bg-[#F85149]/20 transition-all duration-150;
+  }
+
+  .input-field {
+        @apply w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[#D9E2EC] rounded-lg
+          text-sm text-[#0F172A] placeholder:text-[#94A3B8]
+           focus:outline-none focus:border-[#4F8EF7] focus:ring-2 focus:ring-[#4F8EF7]/20
+           transition-all duration-200;
+  }
+
+  .badge-chip    { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold; }
+  .difficulty-easy   { @apply badge-chip bg-[#3FB950]/15 text-[#3FB950]; }
+  .difficulty-medium { @apply badge-chip bg-[#FB8F44]/15 text-[#FB8F44]; }
+  .difficulty-hard   { @apply badge-chip bg-[#F85149]/15 text-[#F85149]; }
+
+  .grade-aplus { @apply text-[#22D3EE]; }
+  .grade-a     { @apply text-[#3FB950]; }
+  .grade-bplus { @apply text-[#4F8EF7]; }
+  .grade-b     { @apply text-[#8B5CF6]; }
+  .grade-c     { @apply text-[#FB8F44]; }
+  .grade-d     { @apply text-[#F85149]; }
+
+  .skeleton { @apply bg-[#E2E8F0] animate-pulse rounded-md; }
+  .divider  { @apply border-t border-[#D9E2EC]; }
+
+  .stat-card  { @apply card p-4; }
+  .stat-value { @apply text-2xl font-bold text-[#0F172A] tabular-nums; }
+  .stat-label { @apply text-xs text-[#64748B] mt-0.5; }
+
+  .page-wrapper { @apply flex h-screen bg-[#F6F8FB] overflow-hidden; }
+  .page-content { @apply flex-1 flex flex-col overflow-hidden; }
+  .page-main    { @apply flex-1 overflow-y-auto p-5 lg:p-7; }
+  .card-grid    { @apply grid gap-4; }
+
+  .tag {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+           bg-[#4F8EF7]/10 text-[#3B82F6] border border-[#4F8EF7]/20;
+  }
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500; color: #64748B;
+  border-left: 2px solid transparent;
+  transition: all 0.15s; cursor: pointer; text-decoration: none;
+  white-space: nowrap;
+}
+.nav-item:hover { color: #0F172A; background: #F1F5F9; }
+.nav-item-active {
+  color: #0F172A;
+  background: rgba(79,142,247,0.1);
+  border-left-color: #4F8EF7;
+  padding-left: 10px;
+}
+
+.focus-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(15,23,42,0.88);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(6px);
+}
+
+.monaco-editor { border-radius: 8px !important; overflow: hidden !important; }
+
+.progress-ring { transform: rotate(-90deg); transform-origin: 50% 50%; }
+.progress-ring__circle { transition: stroke-dashoffset 0.7s ease; }
+
+.recharts-wrapper { font-family: 'Inter', sans-serif !important; }
+.recharts-cartesian-axis-tick-value { fill: #64748B !important; font-size: 11px !important; }
+.recharts-tooltip-wrapper { outline: none !important; }
+
+.no-select { -webkit-user-select: none; user-select: none; }
+
+.page-enter { animation: page-in 0.2s ease-out; }
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+[data-tooltip] { position: relative; }
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute; bottom: calc(100% + 6px); left: 50%;
+  transform: translateX(-50%);
+  background: #0F172A; color: #FFFFFF;
+  padding: 4px 9px; border-radius: 6px; font-size: 11px;
+  white-space: nowrap; border: 1px solid #1E293B; z-index: 50;
+  pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.notif-dot {
+  position: absolute; top: -2px; right: -2px;
+  width: 8px; height: 8px; background: #F85149;
+  border-radius: 50%; border: 2px solid #F6F8FB;
+}
+
+pre, code { font-family: 'JetBrains Mono', monospace; }
