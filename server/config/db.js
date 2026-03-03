@@ -2,12 +2,16 @@ const mongoose = require('mongoose')
 const { MongoMemoryServer } = require('mongodb-memory-server')
 
 let isConnected = false
+let isConnecting = false
 let memoryServer = null
+let reconnectTimer = null
 
 mongoose.set('bufferCommands', false)
 
 const connectDB = async () => {
-  if (isConnected) return
+  if (isConnected || isConnecting) return
+
+  isConnecting = true
 
   const connectWithUri = async (uri, label) => {
     const conn = await mongoose.connect(uri, {
@@ -36,6 +40,11 @@ const connectDB = async () => {
   if (atlasUri) {
     try {
       await connectWithUri(atlasUri, 'atlas')
+      if (reconnectTimer) {
+        clearInterval(reconnectTimer)
+        reconnectTimer = null
+      }
+      isConnecting = false
       return
     } catch (err) {
       console.error('❌ Atlas connection error:', err.message)
@@ -45,31 +54,63 @@ const connectDB = async () => {
   try {
     await connectWithUri(localUri, 'local')
     console.warn('⚠️  Using local Mongo fallback. Set MONGODB_URI for Atlas in production.')
+    if (reconnectTimer) {
+      clearInterval(reconnectTimer)
+      reconnectTimer = null
+    }
+    isConnecting = false
     return
   } catch (err) {
     console.warn('⚠️  Local Mongo fallback unavailable:', err.message)
   }
 
   try {
-    memoryServer = await MongoMemoryServer.create({
-      instance: { dbName: 'kai' },
-    })
+    if (!memoryServer) {
+      memoryServer = await MongoMemoryServer.create({
+        instance: { dbName: 'kai' },
+      })
+    }
     const memoryUri = memoryServer.getUri()
     await connectWithUri(memoryUri, 'in-memory')
     console.warn('⚠️  Running with in-memory database fallback. Data will reset when server restarts.')
+    if (reconnectTimer) {
+      clearInterval(reconnectTimer)
+      reconnectTimer = null
+    }
   } catch (err) {
     console.error('❌ Failed to start fallback database:', err.message)
     console.warn('⚠️  API will run in limited mode until DB reconnects.')
+  } finally {
+    isConnecting = false
   }
+}
+
+const startReconnectLoop = () => {
+  if (reconnectTimer) return
+
+  reconnectTimer = setInterval(async () => {
+    if (!isConnected && !isConnecting) {
+      await connectDB()
+    }
+
+    if (isConnected && reconnectTimer) {
+      clearInterval(reconnectTimer)
+      reconnectTimer = null
+    }
+  }, 10000)
 }
 
 mongoose.connection.on('disconnected', () => {
   console.warn('⚠️  MongoDB disconnected')
   isConnected = false
+  startReconnectLoop()
 })
 
 mongoose.connection.on('error', (err) => {
   console.error('MongoDB error:', err)
+  if (!isConnected) {
+    startReconnectLoop()
+  }
 })
 
 process.on('SIGINT', async () => {

@@ -26,10 +26,29 @@ const vapiProxyRoutes   = require('./routes/vapiProxy')
 const app    = express()
 const server = http.createServer(app)
 
+const parseAllowedOrigins = () => {
+  const defaults = ['http://localhost:5173']
+  const fromClientUrl = process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []
+  const fromClientUrls = (process.env.CLIENT_URLS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+
+  return [...new Set([...fromClientUrl, ...fromClientUrls, ...defaults])]
+}
+
+const allowedOrigins = parseAllowedOrigins()
+
+const corsOriginValidator = (origin, callback) => {
+  if (!origin) return callback(null, true)
+  if (allowedOrigins.includes(origin)) return callback(null, true)
+  return callback(new Error('Not allowed by CORS'))
+}
+
 // Socket.io for real-time features
 const io = new Server(server, {
   cors: {
-    origin:      process.env.CLIENT_URL || 'http://localhost:5173',
+    origin:      corsOriginValidator,
     methods:     ['GET', 'POST'],
     credentials: true,
   },
@@ -48,7 +67,7 @@ app.use(helmet({
 }))
 
 app.use(cors({
-  origin:      process.env.CLIENT_URL || 'http://localhost:5173',
+  origin:      corsOriginValidator,
   credentials: true,
   methods:     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 }))

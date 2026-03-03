@@ -91,6 +91,60 @@ App runs at **http://localhost:5173**
 
 ---
 
+## Deployment (Vercel + Render)
+
+### 1) Deploy Backend on Render
+
+- Create a new **Web Service** from this repository
+- Set **Root Directory** to `server`
+- Build command: `npm install`
+- Start command: `npm start`
+- Health check path: `/api/health`
+
+Set these Render environment variables:
+
+```env
+NODE_ENV=production
+CLIENT_URL=https://<your-vercel-domain>
+# Optional: comma-separated list for preview/custom domains
+CLIENT_URLS=https://<your-vercel-domain>,https://<your-preview-domain>
+
+MONGODB_URI=...
+GEMINI_API_KEY=...
+FIREBASE_ADMIN_SDK_JSON={"type":"service_account",...}
+FIREBASE_STORAGE_BUCKET=...
+JUDGE0_API_KEY=...
+JUDGE0_API_URL=https://judge0-ce.p.rapidapi.com
+JWT_SECRET=...
+```
+
+You can also use the included blueprint file at `render.yaml`.
+
+### 2) Deploy Frontend on Vercel
+
+- Import this repository in Vercel
+- Set **Root Directory** to `client`
+- Framework preset: **Vite**
+- Build command: `npm run build`
+- Output directory: `dist`
+
+Set these Vercel environment variables:
+
+```env
+VITE_API_BASE_URL=https://<your-render-service>.onrender.com/api
+
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_STORAGE_BUCKET=...
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+```
+
+`client/vercel.json` is included to support SPA route refreshes.
+
+---
+
 ## Project Structure
 
 ```

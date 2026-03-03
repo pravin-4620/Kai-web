@@ -53,8 +53,6 @@ const SKELETON_ITEMS = [0, 1, 2, 3, 4, 5]
 // Pre-computed style objects for StatTile accents
 const STAT_TILE_STYLES = {
   '#ffffff': { track: { background: '#ffffff30' }, fill: { background: '#ffffff' } },
-  '#ffffff': { track: { background: '#ffffff30' }, fill: { background: '#ffffff' } },
-  '#d4d4d4': { track: { background: '#d4d4d430' }, fill: { background: '#d4d4d4' } },
   '#d4d4d4': { track: { background: '#d4d4d430' }, fill: { background: '#d4d4d4' } },
 }
 
@@ -378,8 +376,11 @@ export default function DashboardPage() {
                   <div className="card p-5">
                     <h3 className="section-title mb-3">Badges</h3>
                     <div className="flex flex-wrap gap-2">
-                      {badges.map(b => (
-                        <Badge key={b.key} name={b.name} />
+                      {badges.map((badge, index) => (
+                        <Badge
+                          key={badge._id || badge.id || `${badge.name || 'badge'}-${index}`}
+                          name={badge.name}
+                        />
                       ))}
                     </div>
                   </div>
