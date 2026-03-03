@@ -19,6 +19,8 @@ build/
 # Firebase service account keys
 *service-account*.json
 firebase-admin-sdk*.json
+*firebase-adminsdk*.json
+server/*firebase-adminsdk*.json
 
 # OS files
 .DS_Store
