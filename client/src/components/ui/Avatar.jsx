@@ -25,7 +25,7 @@ export default function Avatar({ src, name, size = 'md', className }) {
   return (
     <div className={cn(
       'rounded-full flex items-center justify-center font-semibold flex-shrink-0',
-      'bg-gradient-to-br from-[#4F8EF7] to-[#8B5CF6] text-white ring-1 ring-[#30363D]',
+      'bg-gradient-to-br from-neutral-800 to-neutral-950 text-white ring-1 ring-[#30363D]',
       SIZE[size] || SIZE.md, className
     )}>
       {initials(name)}

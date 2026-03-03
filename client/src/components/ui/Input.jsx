@@ -22,7 +22,7 @@ export default function Input({
             'input-field',
             leftIcon && 'pl-9',
             rightIcon && 'pr-9',
-            error && 'border-[#F85149] focus:border-[#F85149] focus:ring-[#F85149]/20',
+            error && 'border-[#a3a3a3] focus:border-[#a3a3a3] focus:ring-[#a3a3a3]/20',
             inputClassName
           )}
           {...props}
@@ -33,7 +33,7 @@ export default function Input({
           </div>
         )}
       </div>
-      {error && <p className="mt-1 text-xs text-[#F85149]">{error}</p>}
+      {error && <p className="mt-1 text-xs text-[#a3a3a3]">{error}</p>}
       {helper && !error && <p className="mt-1 text-xs text-[#8B949E]">{helper}</p>}
     </div>
   )
@@ -60,12 +60,12 @@ export function Textarea({
         rows={rows}
         className={cn(
           'input-field resize-y min-h-[100px]',
-          error && 'border-[#F85149] focus:border-[#F85149] focus:ring-[#F85149]/20',
+          error && 'border-[#a3a3a3] focus:border-[#a3a3a3] focus:ring-[#a3a3a3]/20',
           inputClassName
         )}
         {...props}
       />
-      {error && <p className="mt-1 text-xs text-[#F85149]">{error}</p>}
+      {error && <p className="mt-1 text-xs text-[#a3a3a3]">{error}</p>}
       {helper && !error && <p className="mt-1 text-xs text-[#8B949E]">{helper}</p>}
     </div>
   )

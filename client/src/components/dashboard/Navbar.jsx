@@ -8,10 +8,10 @@ export default function Navbar({ title, actions }) {
   const { profile, overallScore } = useContext(UserContext)
 
   return (
-    <header className="h-14 bg-[#FFFFFF] border-b border-[#D9E2EC] flex items-center px-5 lg:px-6 gap-3 sticky top-0 z-30 flex-shrink-0">
+    <header className="h-14 bg-bg-secondary border-b border-kai-border flex items-center px-5 lg:px-6 gap-3 sticky top-0 z-30 flex-shrink-0">
       {/* Page title */}
       {title && (
-        <h1 className="text-sm font-semibold text-[#0F172A]">{title}</h1>
+        <h1 className="text-sm font-semibold text-text-primary">{title}</h1>
       )}
 
       {/* Custom actions slot */}
@@ -20,17 +20,17 @@ export default function Navbar({ title, actions }) {
       <div className="flex-1" />
 
       {/* Streak pill */}
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F1F5F9] border border-[#D9E2EC]">
-        <Flame size={13} className="text-[#FB8F44]" />
-        <span className="text-xs font-semibold text-[#0F172A] tabular-nums">
+      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-bg-tertiary border border-kai-border">
+        <Flame size={13} className="text-[#d4d4d4]" />
+        <span className="text-xs font-semibold text-text-primary tabular-nums">
           {profile?.progress?.streak ?? 0}
         </span>
       </div>
 
       {/* Score pill */}
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F1F5F9] border border-[#D9E2EC]">
-        <Zap size={13} className="text-[#4F8EF7]" />
-        <span className="text-xs font-semibold text-[#0F172A] tabular-nums">
+      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-bg-tertiary border border-kai-border">
+        <Zap size={13} className="text-accent-blue" />
+        <span className="text-xs font-semibold text-text-primary tabular-nums">
           {Math.round(overallScore ?? 0)}
         </span>
       </div>

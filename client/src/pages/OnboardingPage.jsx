@@ -57,7 +57,8 @@ export default function OnboardingPage() {
     setSaving(true)
     try {
       await completeOnboarding(data)
-      navigate('/dashboard')
+      toast.success('Generating your 7-day roadmap...')
+      navigate('/roadmap')
     } catch (err) {
       toast.error(err.message || 'Failed to save preferences')
     } finally {
@@ -76,11 +77,11 @@ export default function OnboardingPage() {
       <div className="w-full max-w-2xl">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-blue to-accent-purple mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-neutral-800 to-neutral-950 mb-4">
             <span className="text-xl font-bold text-white">K</span>
           </div>
-          <h1 className="text-2xl font-bold text-[#0F172A]">Set Up Your Profile</h1>
-          <p className="text-[#64748B] text-sm mt-1">Takes 2 minutes — personalizes your entire experience</p>
+          <h1 className="text-2xl font-bold text-text-primary">Set Up Your Profile</h1>
+          <p className="text-text-muted text-sm mt-1">Takes 2 minutes — personalizes your entire experience</p>
         </div>
 
         {/* Step indicators */}
@@ -88,11 +89,11 @@ export default function OnboardingPage() {
           {STEPS.map((s, i) => (
             <div key={s.id} className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                i < step ? 'bg-accent-blue text-white' : i === step ? 'bg-accent-blue/20 border border-accent-blue text-accent-blue' : 'bg-[#F1F5F9] text-[#64748B]'
+                i < step ? 'bg-accent-blue text-white' : i === step ? 'bg-accent-blue/20 border border-accent-blue text-accent-blue' : 'bg-bg-tertiary text-text-muted'
               }`}>
                 {i < step ? <CheckCircle size={14} /> : i + 1}
               </div>
-              {i < STEPS.length - 1 && <div className={`w-8 h-0.5 ${i < step ? 'bg-accent-blue' : 'bg-[#D9E2EC]'}`} />}
+              {i < STEPS.length - 1 && <div className={`w-8 h-0.5 ${i < step ? 'bg-accent-blue' : 'bg-kai-border'}`} />}
             </div>
           ))}
         </div>
@@ -121,25 +122,25 @@ export default function OnboardingPage() {
                       onChange={e => setData(d => ({ ...d, college: e.target.value }))}
                     />
                     <div>
-                      <label className="text-sm font-medium text-[#475569] block mb-2">Branch</label>
+                      <label className="text-sm font-medium text-text-secondary block mb-2">Branch</label>
                       <div className="flex flex-wrap gap-2">
                         {BRANCHES.map(b => (
                           <button
                             key={b}
                             onClick={() => setData(d => ({ ...d, branch: b }))}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${data.branch === b ? 'bg-accent-blue/20 border-accent-blue text-accent-blue' : 'border-[#D9E2EC] text-[#64748B] hover:border-[#B8C8DB]'}`}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${data.branch === b ? 'bg-accent-blue/20 border-accent-blue text-accent-blue' : 'border-kai-border text-text-muted hover:border-accent-blue'}`}
                           >{b}</button>
                         ))}
                       </div>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-[#475569] block mb-2">Year</label>
+                      <label className="text-sm font-medium text-text-secondary block mb-2">Year</label>
                       <div className="flex flex-wrap gap-2">
                         {STUDY_YEARS.map(y => (
                           <button
                             key={y}
                             onClick={() => setData(d => ({ ...d, year: y }))}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${data.year === y ? 'bg-accent-blue/20 border-accent-blue text-accent-blue' : 'border-[#D9E2EC] text-[#64748B] hover:border-[#B8C8DB]'}`}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${data.year === y ? 'bg-accent-blue/20 border-accent-blue text-accent-blue' : 'border-kai-border text-text-muted hover:border-accent-blue'}`}
                           >{y}</button>
                         ))}
                       </div>
@@ -153,19 +154,19 @@ export default function OnboardingPage() {
                 <div>
                   <StepHeader step={STEPS[1]} />
                   <div>
-                    <label className="text-sm font-medium text-[#475569] block mb-2">Target Role</label>
+                    <label className="text-sm font-medium text-text-secondary block mb-2">Target Role</label>
                     <div className="flex flex-wrap gap-2 mb-4">
                       {TARGET_ROLES.map(r => (
                         <button key={r} onClick={() => setData(d => ({ ...d, targetRole: r }))}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${data.targetRole === r ? 'bg-accent-purple/20 border-accent-purple text-accent-purple' : 'border-[#D9E2EC] text-[#64748B] hover:border-[#B8C8DB]'}`}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${data.targetRole === r ? 'bg-accent-purple/20 border-accent-purple text-accent-purple' : 'border-kai-border text-text-muted hover:border-accent-blue'}`}
                         >{r}</button>
                       ))}
                     </div>
-                    <label className="text-sm font-medium text-[#475569] block mb-2">Target Companies <span className="text-[#64748B]">(select up to 5)</span></label>
+                    <label className="text-sm font-medium text-text-secondary block mb-2">Target Companies <span className="text-text-muted">(select up to 5)</span></label>
                     <div className="flex flex-wrap gap-2 max-h-52 overflow-y-auto pr-1">
                       {TOP_COMPANIES.map(c => (
                         <button key={c} onClick={() => toggle('targetCompanies', c)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${data.targetCompanies.includes(c) ? 'bg-green-500/20 border-green-500/50 text-green-400' : 'border-[#D9E2EC] text-[#64748B] hover:border-[#B8C8DB]'}`}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${data.targetCompanies.includes(c) ? 'bg-neutral-8000/20 border-neutral-400/50 text-neutral-300' : 'border-kai-border text-text-muted hover:border-accent-blue'}`}
                         >{c}</button>
                       ))}
                     </div>
@@ -177,28 +178,28 @@ export default function OnboardingPage() {
               {step === 2 && (
                 <div>
                   <StepHeader step={STEPS[2]} />
-                  <label className="text-sm font-medium text-[#475569] block mb-2">Programming Languages & Frameworks</label>
+                  <label className="text-sm font-medium text-text-secondary block mb-2">Programming Languages & Frameworks</label>
                   <div className="flex flex-wrap gap-2 mb-4 max-h-40 overflow-y-auto">
                     {CODING_LANGUAGES.map(l => {
                       const sel = data.skills.find(s => s.name === l)
                       return (
                         <button key={l} onClick={() => sel ? removeSkill(l) : addSkill(l)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${sel ? 'bg-accent-blue/20 border-accent-blue text-accent-blue' : 'border-[#D9E2EC] text-[#64748B] hover:border-[#B8C8DB]'}`}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${sel ? 'bg-accent-blue/20 border-accent-blue text-accent-blue' : 'border-kai-border text-text-muted hover:border-accent-blue'}`}
                         >{sel && '✓ '}{l}</button>
                       )
                     })}
                   </div>
                   {data.skills.length > 0 && (
                     <div className="space-y-2">
-                      <p className="text-xs text-[#64748B] mb-2">Set proficiency level:</p>
+                      <p className="text-xs text-text-muted mb-2">Set proficiency level:</p>
                       {data.skills.map(sk => (
                         <div key={sk.name} className="flex items-center gap-3">
-                          <span className="text-sm text-[#0F172A] w-24 truncate">{sk.name}</span>
+                          <span className="text-sm text-text-primary w-24 truncate">{sk.name}</span>
                           <div className="flex gap-1">
                             {SKILL_LEVELS.map(lvl => (
                               <button key={lvl}
                                 onClick={() => setData(d => ({ ...d, skills: d.skills.map(s => s.name === sk.name ? { ...s, level: lvl } : s) }))}
-                                className={`px-2 py-0.5 text-xs rounded border transition-all ${sk.level === lvl ? 'bg-accent-blue/20 border-accent-blue text-accent-blue' : 'border-[#D9E2EC] text-[#64748B]'}`}
+                                className={`px-2 py-0.5 text-xs rounded border transition-all ${sk.level === lvl ? 'bg-accent-blue/20 border-accent-blue text-accent-blue' : 'border-kai-border text-text-muted'}`}
                               >{lvl}</button>
                             ))}
                           </div>
@@ -215,7 +216,7 @@ export default function OnboardingPage() {
                   <StepHeader step={STEPS[3]} />
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium text-[#475569] block mb-2">Hours per week</label>
+                      <label className="text-sm font-medium text-text-secondary block mb-2">Hours per week</label>
                       <div className="flex items-center gap-4">
                         <input type="range" min={7} max={56} step={7} value={data.hoursPerWeek}
                           onChange={e => setData(d => ({ ...d, hoursPerWeek: +e.target.value }))}
@@ -225,11 +226,11 @@ export default function OnboardingPage() {
                       </div>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-[#475569] block mb-2">Preferred study slots</label>
+                      <label className="text-sm font-medium text-text-secondary block mb-2">Preferred study slots</label>
                       <div className="flex flex-wrap gap-2">
                         {['morning', 'afternoon', 'evening', 'night'].map(slot => (
                           <button key={slot} onClick={() => toggle('studySlots', slot)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium border capitalize transition-all ${data.studySlots.includes(slot) ? 'bg-accent-blue/20 border-accent-blue text-accent-blue' : 'border-[#D9E2EC] text-[#64748B] hover:border-[#B8C8DB]'}`}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium border capitalize transition-all ${data.studySlots.includes(slot) ? 'bg-accent-blue/20 border-accent-blue text-accent-blue' : 'border-kai-border text-text-muted hover:border-accent-blue'}`}
                           >{slot}</button>
                         ))}
                       </div>
@@ -241,27 +242,27 @@ export default function OnboardingPage() {
               {/* Step 4 — Ready */}
               {step === 4 && (
                 <div className="text-center py-4">
-                  <div className="w-16 h-16 rounded-2xl border border-[#D9E2EC] bg-[#F1F5F9] flex items-center justify-center mx-auto mb-4">
-                    <Rocket size={26} className="text-[#4F8EF7]" />
+                  <div className="w-16 h-16 rounded-2xl border border-kai-border bg-bg-tertiary flex items-center justify-center mx-auto mb-4">
+                    <Rocket size={26} className="text-accent-blue" />
                   </div>
-                  <h2 className="text-2xl font-bold text-[#0F172A] mb-2">You&apos;re all set</h2>
-                  <p className="text-[#64748B] mb-6">KAI will generate a personalized 7-day sprint for you based on your profile.</p>
+                  <h2 className="text-2xl font-bold text-text-primary mb-2">You&apos;re all set</h2>
+                  <p className="text-text-muted mb-6">KAI will generate a personalized 7-day sprint for you based on your profile.</p>
                   <div className="grid grid-cols-2 gap-4 text-left mb-6">
-                    <div className="p-3 rounded-lg bg-[#F1F5F9] border border-[#D9E2EC]">
-                      <p className="text-xs text-[#64748B]">College</p>
-                      <p className="text-sm font-medium text-[#0F172A]">{data.college || '—'}</p>
+                    <div className="p-3 rounded-lg bg-bg-tertiary border border-kai-border">
+                      <p className="text-xs text-text-muted">College</p>
+                      <p className="text-sm font-medium text-text-primary">{data.college || '—'}</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-[#F1F5F9] border border-[#D9E2EC]">
-                      <p className="text-xs text-[#64748B]">Target Role</p>
-                      <p className="text-sm font-medium text-[#0F172A]">{data.targetRole}</p>
+                    <div className="p-3 rounded-lg bg-bg-tertiary border border-kai-border">
+                      <p className="text-xs text-text-muted">Target Role</p>
+                      <p className="text-sm font-medium text-text-primary">{data.targetRole}</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-[#F1F5F9] border border-[#D9E2EC]">
-                      <p className="text-xs text-[#64748B]">Companies</p>
-                      <p className="text-sm font-medium text-[#0F172A]">{data.targetCompanies.slice(0, 3).join(', ')}</p>
+                    <div className="p-3 rounded-lg bg-bg-tertiary border border-kai-border">
+                      <p className="text-xs text-text-muted">Companies</p>
+                      <p className="text-sm font-medium text-text-primary">{data.targetCompanies.slice(0, 3).join(', ')}</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-[#F1F5F9] border border-[#D9E2EC]">
-                      <p className="text-xs text-[#64748B]">Skills</p>
-                      <p className="text-sm font-medium text-[#0F172A]">{data.skills.slice(0, 3).map(s => s.name).join(', ')}</p>
+                    <div className="p-3 rounded-lg bg-bg-tertiary border border-kai-border">
+                      <p className="text-xs text-text-muted">Skills</p>
+                      <p className="text-sm font-medium text-text-primary">{data.skills.slice(0, 3).map(s => s.name).join(', ')}</p>
                     </div>
                   </div>
                 </div>
@@ -270,7 +271,7 @@ export default function OnboardingPage() {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="flex justify-between pt-6 border-t border-[#D9E2EC] mt-6">
+          <div className="flex justify-between pt-6 border-t border-kai-border mt-6">
             <Button variant="ghost" onClick={back} disabled={step === 0} leftIcon={<ChevronLeft size={16} />}>
               Back
             </Button>
@@ -298,8 +299,8 @@ function StepHeader({ step }) {
         <Icon size={18} />
       </div>
       <div>
-        <h2 className="text-lg font-semibold text-[#0F172A]">{step.title}</h2>
-        <p className="text-xs text-[#64748B]">{step.desc}</p>
+        <h2 className="text-lg font-semibold text-text-primary">{step.title}</h2>
+        <p className="text-xs text-text-muted">{step.desc}</p>
       </div>
     </div>
   )

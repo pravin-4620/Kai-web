@@ -12,7 +12,7 @@ import UserContext from '../context/UserContext'
 import { toast } from 'react-hot-toast'
 
 const TASK_ICONS = { study: BookOpen, coding: Code2, quiz: Brain, resource: Link2, practice: Code2 }
-const TASK_COLORS = { study: 'text-blue-500', coding: 'text-purple-500', quiz: 'text-yellow-500', resource: 'text-green-500', practice: 'text-pink-500' }
+const TASK_COLORS = { study: 'text-neutral-400', coding: 'text-neutral-400', quiz: 'text-neutral-400', resource: 'text-neutral-400', practice: 'text-neutral-400' }
 
 export default function RoadmapPage() {
   const [roadmap, setRoadmap] = useState(null)
@@ -85,11 +85,11 @@ export default function RoadmapPage() {
             <div className="space-y-4">{Array.from({ length: 7 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}</div>
           ) : !roadmap ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <div className="w-16 h-16 rounded-2xl bg-[#F1F5F9] border border-[#D9E2EC] flex items-center justify-center mb-4">
-                <Map size={28} className="text-[#4F8EF7]" />
+              <div className="w-16 h-16 rounded-2xl bg-bg-tertiary border border-kai-border flex items-center justify-center mb-4">
+                <Map size={28} className="text-accent-blue" />
               </div>
-              <h2 className="text-2xl font-bold text-[#0F172A] mb-2">No Roadmap Yet</h2>
-              <p className="text-[#64748B] mb-6">Let AI build your personalized 7-day sprint plan</p>
+              <h2 className="text-2xl font-bold text-text-primary mb-2">No Roadmap Yet</h2>
+              <p className="text-text-muted mb-6">Let AI build your personalized 7-day sprint plan</p>
               <Button onClick={generateRoadmap} loading={generating} leftIcon={<Sparkles size={16} />} size="lg">
                 Generate My Roadmap
               </Button>
@@ -99,8 +99,8 @@ export default function RoadmapPage() {
               {/* Header */}
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <h2 className="text-xl font-bold text-[#0F172A]">Your 7-Day Sprint</h2>
-                  <p className="text-sm text-[#64748B]">{completedTasks}/{totalTasks} tasks completed</p>
+                  <h2 className="text-xl font-bold text-text-primary">Your 7-Day Sprint</h2>
+                  <p className="text-sm text-text-muted">{completedTasks}/{totalTasks} tasks completed</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Progress value={completedTasks} max={totalTasks} className="w-32" showLabel />
@@ -124,38 +124,38 @@ export default function RoadmapPage() {
                       onClick={() => setExpandedDay(expanded ? null : day.day)}
                     >
                       <div className="flex items-center gap-4 cursor-pointer select-none">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${dayCompleted ? 'bg-green-500 text-white' : isToday ? 'bg-accent-blue text-white' : 'bg-[#F1F5F9] text-[#64748B]'}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${dayCompleted ? 'bg-neutral-400 text-white' : isToday ? 'bg-accent-blue text-white' : 'bg-bg-tertiary text-text-muted'}`}>
                           {dayCompleted ? <CheckCircle size={18} /> : `D${day.day}`}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold text-[#0F172A]">{day.theme || `Day ${day.day}`}</p>
+                            <p className="font-semibold text-text-primary">{day.theme || `Day ${day.day}`}</p>
                             {isToday && <span className="px-2 py-0.5 text-xs rounded-full bg-accent-blue/20 text-accent-blue border border-accent-blue/30">Today</span>}
                           </div>
                           <Progress value={dayProgress} className="mt-1 w-40" size="sm" color={dayCompleted ? 'green' : 'blue'} />
                         </div>
-                        <span className="text-[#94A3B8] text-xs">{day.tasks.length} tasks</span>
-                        {expanded ? <ChevronUp size={16} className="text-[#94A3B8]" /> : <ChevronDown size={16} className="text-[#94A3B8]" />}
+                        <span className="text-[#a3a3a3] text-xs">{day.tasks.length} tasks</span>
+                        {expanded ? <ChevronUp size={16} className="text-[#a3a3a3]" /> : <ChevronDown size={16} className="text-[#a3a3a3]" />}
                       </div>
 
                       {expanded && (
-                        <div className="mt-4 space-y-2 pt-4 border-t border-[#D9E2EC]" onClick={e => e.stopPropagation()}>
+                        <div className="mt-4 space-y-2 pt-4 border-t border-kai-border" onClick={e => e.stopPropagation()}>
                           {day.tasks?.map(task => {
                             const Icon = TASK_ICONS[task.type] || Circle
-                            const col = TASK_COLORS[task.type] || 'text-[#64748B]'
+                            const col = TASK_COLORS[task.type] || 'text-text-muted'
                             return (
                               <div key={task._id || task.title}
-                                className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#F8FAFC] cursor-pointer transition-colors"
+                                className="flex items-start gap-3 p-3 rounded-lg hover:bg-bg-tertiary cursor-pointer transition-colors"
                                 onClick={() => toggleTask(day.day, task._id, task.isCompleted)}
                               >
                                 <div className="mt-0.5 flex-shrink-0">
                                   {task.isCompleted
-                                    ? <CheckCircle size={16} className="text-green-500" />
-                                    : <Circle size={16} className="text-[#CBD5E1]" />}
+                                    ? <CheckCircle size={16} className="text-neutral-400" />
+                                    : <Circle size={16} className="text-[#d4d4d4]" />}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className={`text-sm font-medium ${task.isCompleted ? 'line-through text-[#94A3B8]' : 'text-[#0F172A]'}`}>{task.title}</p>
-                                  {task.description && <p className="text-xs text-[#94A3B8] mt-0.5 truncate">{task.description}</p>}
+                                  <p className={`text-sm font-medium ${task.isCompleted ? 'line-through text-[#a3a3a3]' : 'text-text-primary'}`}>{task.title}</p>
+                                  {task.description && <p className="text-xs text-[#a3a3a3] mt-0.5 truncate">{task.description}</p>}
                                   {task.resourceUrl && (
                                     <a href={task.resourceUrl} target="_blank" rel="noopener noreferrer"
                                       className="text-xs text-accent-blue hover:underline mt-1 inline-flex items-center gap-1"

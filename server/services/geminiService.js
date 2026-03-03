@@ -4,11 +4,23 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
 const MODELS = {
   flash: 'gemini-2.0-flash',
+  flash25: 'gemini-2.5-flash',
+  flashLite: 'gemini-2.0-flash-lite',
   pro:   'gemini-2.5-pro',
+}
+
+// Fallback chain: if primary model quota is exhausted, try these in order
+const FALLBACK_CHAINS = {
+  'gemini-2.0-flash':      ['gemini-2.5-flash', 'gemini-2.0-flash-lite'],
+  'gemini-2.5-flash':      ['gemini-2.0-flash', 'gemini-2.0-flash-lite'],
+  'gemini-2.5-pro':        ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite'],
 }
 
 const getModel = (modelKey = 'flash') =>
   genAI.getGenerativeModel({ model: MODELS[modelKey] || MODELS.flash })
+
+const getModelByName = (modelName) =>
+  genAI.getGenerativeModel({ model: modelName })
 
 // ─── Safe JSON parse ─────────────────────────────────────────────────────────
 function extractJSON(text) {
@@ -152,6 +164,46 @@ ${resumeText.slice(0, 2000)}`
   return extractJSON(result.response.text())
 }
 
+// ─── Comprehensive Resume PDF Analysis ────────────────────────────────────────
+const analyzeResumePDF = async (resumeText, targetRole) => {
+  const model = getModel('flash')
+  const prompt = `You are an expert ATS (Applicant Tracking System) analyzer and career coach. Analyze this resume for a "${targetRole || 'Software Engineer'}" role.
+
+Return ONLY valid JSON with this EXACT structure:
+{
+  "atsScore": 72,
+  "sectionScores": {
+    "contactInfo": { "score": 90, "feedback": "Brief feedback" },
+    "summary": { "score": 60, "feedback": "Brief feedback" },
+    "experience": { "score": 70, "feedback": "Brief feedback" },
+    "education": { "score": 85, "feedback": "Brief feedback" },
+    "skills": { "score": 75, "feedback": "Brief feedback" },
+    "projects": { "score": 65, "feedback": "Brief feedback" },
+    "formatting": { "score": 80, "feedback": "Brief feedback" }
+  },
+  "strengths": ["Strength 1", "Strength 2", "Strength 3"],
+  "criticalIssues": ["Issue that must be fixed 1", "Issue 2"],
+  "suggestions": [
+    { "priority": "high", "category": "content", "text": "Specific actionable suggestion" },
+    { "priority": "high", "category": "keywords", "text": "Specific actionable suggestion" },
+    { "priority": "medium", "category": "formatting", "text": "Specific actionable suggestion" },
+    { "priority": "medium", "category": "impact", "text": "Specific actionable suggestion" },
+    { "priority": "low", "category": "polish", "text": "Specific actionable suggestion" }
+  ],
+  "missingKeywords": ["keyword1", "keyword2", "keyword3"],
+  "presentKeywords": ["keyword1", "keyword2"],
+  "actionVerbs": { "found": ["Built", "Designed"], "suggested": ["Spearheaded", "Architected", "Optimized"] },
+  "quantificationCheck": { "hasMetrics": false, "examples": ["Add: Improved API response time by 40%", "Add: Served 10K+ daily users"] },
+  "overallFeedback": "2-3 sentence overall assessment of the resume"
+}
+
+Resume text:
+${resumeText.slice(0, 4000)}`
+
+  const result = await callGeminiWithRetry(model, prompt)
+  return extractJSON(result.response.text())
+}
+
 // ─── Code Evaluation ──────────────────────────────────────────────────────────
 const evaluateCode = async (problem, code, language, testResults) => {
   const model = getModel('flash')
@@ -174,30 +226,67 @@ Return ONLY valid JSON:
   "optimalSolution": "Brief description of optimal approach",
   "overallGrade": "B+"
 }`
-  const result = await model.generateContent(prompt)
+  const result = await callGeminiWithRetry(model, prompt)
   return extractJSON(result.response.text())
 }
 
-// ─── Retry helper for Gemini rate limits ─────────────────────────────────────
+// ─── Retry helper for Gemini rate limits with model fallback ─────────────────
 const sleep = (ms) => new Promise(r => setTimeout(r, ms))
 
-async function callGeminiWithRetry(model, prompt, maxRetries = 3) {
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const result = await model.generateContent(prompt)
-      return result
-    } catch (err) {
-      const is429 = err.message?.includes('429') || err.message?.includes('quota') || err.message?.includes('Too Many Requests')
-      const is503 = err.message?.includes('503') || err.message?.includes('overloaded')
-      if ((is429 || is503) && attempt < maxRetries) {
-        const delay = Math.min(2000 * Math.pow(2, attempt), 15000)
-        console.log(`Gemini rate limited (attempt ${attempt + 1}/${maxRetries + 1}), retrying in ${delay}ms...`)
-        await sleep(delay)
-        continue
+async function callGeminiWithRetry(model, prompt, maxRetries = 2) {
+  // Determine the primary model name from the model object (strip "models/" prefix)
+  const rawName = model?.model || model?.modelName || ''
+  const primaryModelName = rawName.replace(/^models\//, '')
+
+  // Build list of models to try: primary + fallbacks
+  const modelsToTry = [model]
+  const fallbacks = FALLBACK_CHAINS[primaryModelName] || FALLBACK_CHAINS['gemini-2.0-flash'] || []
+  for (const fbName of fallbacks) {
+    modelsToTry.push(getModelByName(fbName))
+  }
+
+  let lastError = null
+
+  for (let modelIdx = 0; modelIdx < modelsToTry.length; modelIdx++) {
+    const currentModel = modelsToTry[modelIdx]
+    const modelLabel = modelIdx === 0 ? primaryModelName || 'primary' : (fallbacks[modelIdx - 1] || `fallback-${modelIdx}`)
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const result = await currentModel.generateContent(prompt)
+        if (modelIdx > 0) {
+          console.log(`✅ Gemini fallback model "${modelLabel}" succeeded`)
+        }
+        return result
+      } catch (err) {
+        lastError = err
+        const is429 = err.message?.includes('429') || err.message?.includes('quota') || err.message?.includes('Too Many Requests')
+        const is503 = err.message?.includes('503') || err.message?.includes('overloaded')
+
+        if (is429 || is503) {
+          if (attempt < maxRetries) {
+            const delay = Math.min(2000 * Math.pow(2, attempt), 10000)
+            console.log(`⚠️  Gemini "${modelLabel}" rate limited (attempt ${attempt + 1}/${maxRetries + 1}), retrying in ${delay}ms...`)
+            await sleep(delay)
+            continue
+          }
+          // Exhausted retries for this model — try next fallback
+          if (modelIdx < modelsToTry.length - 1) {
+            console.log(`🔄 Gemini "${modelLabel}" quota exhausted, switching to fallback "${fallbacks[modelIdx] || 'next'}"...`)
+            break // break inner retry loop, continue outer model loop
+          }
+        }
+
+        // Non-rate-limit error — throw immediately
+        if (!is429 && !is503) {
+          throw err
+        }
       }
-      throw err
     }
   }
+
+  // All models and retries exhausted
+  throw lastError || new Error('All Gemini models exhausted — please try again later')
 }
 
 // ─── Quiz Question Generation ─────────────────────────────────────────────────
@@ -299,6 +388,31 @@ Return ONLY valid JSON:
   return extractJSON(result.response.text())
 }
 
+// ─── Soft Skills Voice Report ─────────────────────────────────────────────────
+const generateSoftSkillReport = async (messages, moduleId) => {
+  const model = getModel('flash')
+  const conversation = messages.map(m => `${m.role === 'user' ? 'Student' : 'Coach'}: ${m.content}`).join('\n\n')
+  const prompt = `Analyze this soft skills voice practice session for the "${moduleId}" module and generate a detailed feedback report.
+Return ONLY valid JSON:
+{
+  "overallScore": 78,
+  "communication": 80,
+  "clarity": 75,
+  "professionalism": 82,
+  "confidence": 70,
+  "relevance": 85,
+  "strengths": ["Clear articulation", "Good examples used"],
+  "improvements": ["Use more specific examples", "Structure answers with STAR method"],
+  "tips": ["Practice speaking slowly and clearly", "Record yourself and listen back"],
+  "summary": "Overall assessment of the session"
+}
+
+Conversation:
+${conversation.slice(0, 4000)}`
+  const result = await callGeminiWithRetry(model, prompt)
+  return extractJSON(result.response.text())
+}
+
 // ─── Analytics Insights ───────────────────────────────────────────────────────
 const generateInsights = async (userData) => {
   const model = getModel('flash')
@@ -326,6 +440,7 @@ module.exports = {
   generateRoadmap,
   generateCompanyRoadmap,
   scoreResume,
+  analyzeResumePDF,
   improveBullet,
   generateResumeSummary,
   compareResumeWithJD,
@@ -334,5 +449,6 @@ module.exports = {
   interviewChat,
   generateInterviewReport,
   evaluateSoftSkill,
+  generateSoftSkillReport,
   generateInsights,
 }

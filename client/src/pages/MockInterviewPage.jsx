@@ -148,10 +148,10 @@ Rules:
               <motion.div key="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="max-w-xl mx-auto">
                 {isLocked ? (
                   <Card className="text-center py-12">
-                    <Lock size={40} className="text-[#CBD5E1] mx-auto mb-4" />
-                    <h2 className="text-xl font-bold text-[#0F172A] mb-2">Grade B Required</h2>
-                    <p className="text-[#64748B] text-sm">Reach an overall score of 60+ to unlock Mock Interviews.</p>
-                    <p className="text-[#94A3B8] text-xs mt-2">Your score: {Math.round(overallScore ?? 0)}/100</p>
+                    <Lock size={40} className="text-[#d4d4d4] mx-auto mb-4" />
+                    <h2 className="text-xl font-bold text-text-primary mb-2">Grade B Required</h2>
+                    <p className="text-text-muted text-sm">Reach an overall score of 60+ to unlock Mock Interviews.</p>
+                    <p className="text-[#a3a3a3] text-xs mt-2">Your score: {Math.round(overallScore ?? 0)}/100</p>
                     <Progress value={overallScore ?? 0} max={100} className="mt-4 max-w-xs mx-auto" />
                   </Card>
                 ) : (
@@ -161,21 +161,21 @@ Rules:
                         <Phone size={20} className="text-accent-blue" />
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold text-[#0F172A]">Voice Interview</h2>
-                        <p className="text-xs text-[#64748B]">AI-powered real-time voice conversation</p>
+                        <h2 className="text-xl font-bold text-text-primary">Voice Interview</h2>
+                        <p className="text-xs text-text-muted">AI-powered real-time voice conversation</p>
                       </div>
                     </div>
 
-                    <p className="text-sm text-[#64748B] mb-6">
+                    <p className="text-sm text-text-muted mb-6">
                       Have a real-time voice conversation with an AI interviewer. Speak naturally, just like a phone interview. You'll be scored on communication, technical depth, problem-solving, and confidence.
                     </p>
 
                     <div className="mb-6">
-                      <p className="text-sm font-medium text-[#475569] mb-3">Select Role</p>
+                      <p className="text-sm font-medium text-text-secondary mb-3">Select Role</p>
                       <div className="grid grid-cols-2 gap-2">
                         {ROLE_TYPES.map(({ value, label, icon: RoleIcon }) => (
                           <button key={value} onClick={() => setRoleType(value)}
-                            className={`flex items-center gap-2 p-3 rounded-lg border text-sm font-medium transition-all ${roleType === value ? 'bg-accent-blue/10 border-accent-blue text-accent-blue' : 'border-[#D9E2EC] text-[#64748B] hover:border-[#B8C8DB]'}`}
+                            className={`flex items-center gap-2 p-3 rounded-lg border text-sm font-medium transition-all ${roleType === value ? 'bg-accent-blue/10 border-accent-blue text-accent-blue' : 'border-kai-border text-text-muted hover:border-accent-blue'}`}
                           >
                             <RoleIcon size={14} />{label}
                           </button>
@@ -184,9 +184,9 @@ Rules:
                     </div>
 
                     {!isAvailable && (
-                      <div className="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                        <p className="text-xs text-amber-700 font-medium mb-0.5">Voice not configured</p>
-                        <p className="text-xs text-amber-600">Add <code className="bg-amber-100 px-1 rounded">VITE_VAPI_PUBLIC_KEY</code> to your client <code className="bg-amber-100 px-1 rounded">.env</code> file to enable voice interviews.</p>
+                      <div className="mb-4 p-3 rounded-lg bg-neutral-800 border border-neutral-800">
+                        <p className="text-xs text-neutral-500 font-medium mb-0.5">Voice not configured</p>
+                        <p className="text-xs text-neutral-400">Add <code className="bg-neutral-800 px-1 rounded">VITE_VAPI_PUBLIC_KEY</code> to your client <code className="bg-neutral-800 px-1 rounded">.env</code> file to enable voice interviews.</p>
                       </div>
                     )}
 
@@ -207,15 +207,15 @@ Rules:
                 <div className="flex items-center gap-3 mb-10 mt-2">
                   {isConnecting ? (
                     <>
-                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                      <span className="text-sm text-[#64748B]">Connecting...</span>
+                      <span className="w-2 h-2 rounded-full bg-neutral-300 animate-pulse" />
+                      <span className="text-sm text-text-muted">Connecting...</span>
                     </>
                   ) : (
                     <>
-                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-sm text-[#475569] font-medium">Live</span>
-                      <span className="text-sm font-mono text-[#0F172A] bg-[#F1F5F9] px-2.5 py-1 rounded-lg flex items-center gap-1.5">
-                        <Clock size={12} className="text-[#64748B]" />
+                      <span className="w-2 h-2 rounded-full bg-neutral-8000 animate-pulse" />
+                      <span className="text-sm text-text-secondary font-medium">Live</span>
+                      <span className="text-sm font-mono text-text-primary bg-bg-tertiary px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                        <Clock size={12} className="text-text-muted" />
                         {formatDuration(callDuration)}
                       </span>
                     </>
@@ -242,12 +242,12 @@ Rules:
                     className="absolute -inset-1 rounded-full transition-all duration-200"
                     style={{
                       background: isSpeaking
-                        ? `radial-gradient(circle, transparent 55%, rgba(79,142,247,${Math.min(volumeLevel * 0.4, 0.25)}) 100%)`
+                        ? `radial-gradient(circle, transparent 55%, rgba(255,255,255,${Math.min(volumeLevel * 0.4, 0.25)}) 100%)`
                         : 'transparent',
                     }}
                   />
                   <motion.div
-                    className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center relative z-10 shadow-lg shadow-blue-500/20"
+                    className="w-28 h-28 rounded-full bg-gradient-to-br from-neutral-800 to-neutral-950 flex items-center justify-center relative z-10 shadow-lg shadow-neutral-400/20"
                     animate={isSpeaking ? { scale: [1, 1.04, 1] } : { scale: 1 }}
                     transition={{ duration: 1.2, repeat: isSpeaking ? Infinity : 0, ease: 'easeInOut' }}
                   >
@@ -255,24 +255,24 @@ Rules:
                   </motion.div>
                 </div>
 
-                <h3 className="text-lg font-semibold text-[#0F172A]">KAI Interviewer</h3>
-                <p className="text-sm text-[#64748B] mb-1">{roleLabel} Interview</p>
+                <h3 className="text-lg font-semibold text-text-primary">KAI Interviewer</h3>
+                <p className="text-sm text-text-muted mb-1">{roleLabel} Interview</p>
                 <p className="text-xs h-4">
                   {isConnecting ? (
-                    <span className="text-amber-500">Setting up call...</span>
+                    <span className="text-neutral-400">Setting up call...</span>
                   ) : isSpeaking ? (
                     <motion.span className="text-accent-blue font-medium" animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>
                       Speaking...
                     </motion.span>
                   ) : isCallActive ? (
-                    <span className="text-green-600">Listening to you...</span>
+                    <span className="text-neutral-400">Listening to you...</span>
                   ) : null}
                 </p>
 
                 {/* Live Transcript */}
                 <div className="w-full mt-8 flex-1 min-h-0 overflow-y-auto max-h-72 space-y-3 px-2 scrollbar-thin">
                   {transcript.length === 0 && isCallActive && (
-                    <p className="text-center text-sm text-[#94A3B8] py-4">Conversation transcript will appear here...</p>
+                    <p className="text-center text-sm text-[#a3a3a3] py-4">Conversation transcript will appear here...</p>
                   )}
                   {transcript.map((t, i) => (
                     <motion.div
@@ -281,10 +281,10 @@ Rules:
                       animate={{ opacity: 1, y: 0 }}
                       className={`flex gap-2.5 ${t.role === 'user' ? 'flex-row-reverse' : ''}`}
                     >
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${t.role === 'interviewer' ? 'bg-accent-blue/10' : 'bg-[#F1F5F9]'}`}>
-                        {t.role === 'interviewer' ? <Bot size={12} className="text-accent-blue" /> : <User size={12} className="text-[#64748B]" />}
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${t.role === 'interviewer' ? 'bg-accent-blue/10' : 'bg-bg-tertiary'}`}>
+                        {t.role === 'interviewer' ? <Bot size={12} className="text-accent-blue" /> : <User size={12} className="text-text-muted" />}
                       </div>
-                      <div className={`max-w-[80%] px-3 py-2 rounded-xl text-sm leading-relaxed ${t.role === 'interviewer' ? 'bg-[#F1F5F9] text-[#334155] rounded-tl-sm' : 'bg-accent-blue/10 text-[#0F172A] rounded-tr-sm'}`}>
+                      <div className={`max-w-[80%] px-3 py-2 rounded-xl text-sm leading-relaxed ${t.role === 'interviewer' ? 'bg-bg-tertiary text-[#404040] rounded-tl-sm' : 'bg-accent-blue/10 text-text-primary rounded-tr-sm'}`}>
                         {t.content}
                       </div>
                     </motion.div>
@@ -296,14 +296,14 @@ Rules:
                 <div className="flex items-center gap-6 mt-8 pb-4">
                   <button
                     onClick={toggleMute}
-                    className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-sm ${isMuted ? 'bg-red-50 text-red-500 border border-red-200' : 'bg-[#F1F5F9] text-[#475569] border border-[#D9E2EC] hover:bg-[#E2E8F0]'}`}
+                    className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-sm ${isMuted ? 'bg-neutral-800 text-neutral-400 border border-neutral-800' : 'bg-bg-tertiary text-text-secondary border border-kai-border hover:bg-[#262626]'}`}
                     title={isMuted ? 'Unmute microphone' : 'Mute microphone'}
                   >
                     {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
                   </button>
                   <button
                     onClick={handleEndCall}
-                    className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-all shadow-lg hover:shadow-xl active:scale-95"
+                    className="w-16 h-16 rounded-full bg-neutral-8000 hover:bg-neutral-400 text-white flex items-center justify-center transition-all shadow-lg hover:shadow-xl active:scale-95"
                     title="End interview"
                   >
                     <PhoneOff size={24} />
@@ -315,13 +315,13 @@ Rules:
             {/* ── Processing ────────────────────────────────────────── */}
             {phase === 'processing' && (
               <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-md mx-auto text-center py-20">
-                <div className="w-16 h-16 rounded-2xl bg-[#F1F5F9] border border-[#D9E2EC] flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-2xl bg-bg-tertiary border border-kai-border flex items-center justify-center mx-auto mb-4">
                   <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
                     <FileText size={28} className="text-accent-blue" />
                   </motion.div>
                 </div>
-                <h2 className="text-xl font-bold text-[#0F172A] mb-2">Analyzing Your Interview</h2>
-                <p className="text-sm text-[#64748B]">Generating detailed performance report...</p>
+                <h2 className="text-xl font-bold text-text-primary mb-2">Analyzing Your Interview</h2>
+                <p className="text-sm text-text-muted">Generating detailed performance report...</p>
                 <div className="mt-6 flex justify-center gap-1">
                   {[0, 1, 2].map(i => (
                     <motion.div
@@ -339,10 +339,10 @@ Rules:
             {phase === 'report' && report && (
               <motion.div key="report" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="max-w-2xl mx-auto space-y-6">
                 <div className="text-center">
-                  <div className="w-14 h-14 rounded-xl bg-[#F1F5F9] border border-[#D9E2EC] flex items-center justify-center mx-auto mb-3">
-                    <FileText size={24} className="text-[#4F8EF7]" />
+                  <div className="w-14 h-14 rounded-xl bg-bg-tertiary border border-kai-border flex items-center justify-center mx-auto mb-3">
+                    <FileText size={24} className="text-accent-blue" />
                   </div>
-                  <h2 className="text-2xl font-bold text-[#0F172A]">Interview Complete</h2>
+                  <h2 className="text-2xl font-bold text-text-primary">Interview Complete</h2>
                   <p className="text-3xl font-bold gradient-text mt-2">{Math.round(report.overallScore ?? 0)}/100</p>
                 </div>
 
@@ -355,8 +355,8 @@ Rules:
                     { label: 'Relevance', score: report.relevance },
                   ].map(({ label, score }) => (
                     <Card key={label} className="p-3">
-                      <p className="text-xs text-[#64748B] mb-1">{label}</p>
-                      <p className="text-lg font-bold text-[#0F172A]">{score ?? 0}%</p>
+                      <p className="text-xs text-text-muted mb-1">{label}</p>
+                      <p className="text-lg font-bold text-text-primary">{score ?? 0}%</p>
                       <Progress value={score ?? 0} size="sm" className="mt-1" />
                     </Card>
                   ))}
@@ -364,15 +364,15 @@ Rules:
 
                 {report.strengths?.length > 0 && (
                   <Card>
-                    <p className="text-sm font-semibold text-green-600 mb-2 flex items-center gap-1.5"><CheckCircle size={14} /> Strengths</p>
-                    <ul className="space-y-1">{report.strengths.map((s, i) => <li key={i} className="text-sm text-[#475569] flex gap-2"><span className="text-green-500">+</span>{s}</li>)}</ul>
+                    <p className="text-sm font-semibold text-neutral-400 mb-2 flex items-center gap-1.5"><CheckCircle size={14} /> Strengths</p>
+                    <ul className="space-y-1">{report.strengths.map((s, i) => <li key={i} className="text-sm text-text-secondary flex gap-2"><span className="text-neutral-400">+</span>{s}</li>)}</ul>
                   </Card>
                 )}
 
                 {report.improvements?.length > 0 && (
                   <Card>
-                    <p className="text-sm font-semibold text-amber-600 mb-2 flex items-center gap-1.5"><Lightbulb size={14} /> Areas to Improve</p>
-                    <ul className="space-y-1">{report.improvements.map((s, i) => <li key={i} className="text-sm text-[#475569] flex gap-2"><span className="text-amber-500">-</span>{s}</li>)}</ul>
+                    <p className="text-sm font-semibold text-neutral-400 mb-2 flex items-center gap-1.5"><Lightbulb size={14} /> Areas to Improve</p>
+                    <ul className="space-y-1">{report.improvements.map((s, i) => <li key={i} className="text-sm text-text-secondary flex gap-2"><span className="text-neutral-400">-</span>{s}</li>)}</ul>
                   </Card>
                 )}
 

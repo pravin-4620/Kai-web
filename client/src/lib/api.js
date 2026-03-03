@@ -77,6 +77,8 @@ export const companiesApi = {
 
 // ─── Resume ───────────────────────────────────────────────────────────────────
 export const resumeApi = {
+  analyze:        (formData) => api.post('/resume/analyze', formData, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 60000 }),
+  analyzeText:    (text, targetRole) => api.post('/resume/analyze-text', { text, targetRole }, { timeout: 60000 }),
   getMine:        ()         => api.get('/resume/mine'),
   save:           (data)     => api.post('/resume/save', data),
   getScore:       (resume)   => api.post('/resume/score', { resumeData: resume }),
@@ -84,11 +86,11 @@ export const resumeApi = {
   generateSummary: (data)    => api.post('/resume/summary', { resumeData: data }),
   compareJD:      (resumeText, jd) => api.post('/resume/compare-jd', { resumeText, jd }),
   getVersions:    ()         => api.get('/resume/versions'),
-  exportPDF:      (data)     => api.post('/resume/export', data, { responseType: 'blob' }),
 }
 
 // ─── Coding ───────────────────────────────────────────────────────────────────
 export const codingApi = {
+  getSession:   ()           => api.get('/coding/session'),
   getProblems:  (filters)    => api.get('/coding/problems', { params: filters }),
   getProblem:   (id)         => api.get(`/coding/problems/${id}`),
   runCode:      (data)       => api.post('/coding/run', data),
@@ -122,9 +124,12 @@ export const interviewApi = {
 
 // ─── Soft Skills ─────────────────────────────────────────────────────────────
 export const softSkillsApi = {
-  getModules:    ()          => api.get('/softskills/modules'),
-  submitExercise: (data)     => api.post('/softskills/submit', data),
-  getProgress:   ()          => api.get('/softskills/progress'),
+  getModules:     ()          => api.get('/softskills/modules'),
+  submitExercise: (data)      => api.post('/softskills/submit', data),
+  getProgress:    ()          => api.get('/softskills/progress'),
+  // Voice session
+  startVoice:     (config)    => api.post('/softskills/start-voice', config),
+  endVoice:       (sessionId, transcript) => api.post(`/softskills/end-voice/${sessionId}`, { transcript }),
 }
 
 // ─── Leaderboard ─────────────────────────────────────────────────────────────

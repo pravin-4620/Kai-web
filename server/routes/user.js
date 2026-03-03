@@ -65,7 +65,29 @@ router.post('/onboarding', authMiddleware, async (req, res) => {
     // Update streak on first login
     await updateStreak(user._id)
 
-    res.json({ user, message: 'Onboarding complete! Generating your roadmap...' })
+    // Auto-generate 7-day roadmap in background
+    try {
+      const Roadmap = require('../models/Roadmap')
+      const { generateRoadmap } = require('../services/geminiService')
+      const profile = {
+        year: user.year, branch: user.branch, targetRole: user.targetRole,
+        targetCompanies: user.targetCompanies, skills: user.skills,
+        hoursPerWeek: user.hoursPerWeek,
+      }
+      // Deactivate any old roadmaps
+      await Roadmap.updateMany({ userId: user._id }, { isActive: false })
+      const aiRoadmap = await generateRoadmap(profile)
+      const roadmap = new Roadmap({
+        userId: user._id, userUid: user.uid,
+        profile, days: aiRoadmap.days || [], version: 1,
+      })
+      await roadmap.save()
+      console.log(`✅ Auto-generated roadmap for ${user.uid}`)
+    } catch (roadmapErr) {
+      console.warn('⚠️  Auto roadmap generation failed (user can generate manually):', roadmapErr.message?.slice(0, 120))
+    }
+
+    res.json({ user, message: 'Onboarding complete! Your roadmap is ready.' })
   } catch (err) {
     res.status(500).json({ message: err.message })
   }

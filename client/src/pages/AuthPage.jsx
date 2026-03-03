@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useCallback, useMemo, memo } from 'react'
 import { Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Github, Chrome, Mail, Eye, EyeOff, ShieldCheck } from 'lucide-react'
@@ -8,6 +8,7 @@ import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import { toast } from 'react-hot-toast'
 
+// ✅ Static data moved outside component - prevents recreation
 const FIREBASE_MSGS = {
   'auth/email-already-in-use': 'Email already registered. Try signing in.',
   'auth/wrong-password': 'Incorrect password.',
@@ -16,18 +17,119 @@ const FIREBASE_MSGS = {
   'auth/invalid-email': 'Please enter a valid email.',
 }
 
+const FEATURES = [
+  'Roadmap with daily execution',
+  'Coding + quiz + interview simulation',
+  'Resume and readiness scoring',
+]
+
+const MODE_OPTIONS = ['signin', 'signup']
+
+// ✅ Animation variants extracted - prevents object recreation
+const fadeInUp = { opacity: 0, y: 12 }
+const fadeInUpAnimate = { opacity: 1, y: 0 }
+const nameFieldVariants = {
+  initial: { opacity: 0, height: 0 },
+  animate: { opacity: 1, height: 'auto' },
+  exit: { opacity: 0, height: 0 },
+}
+
+// ✅ Memoized sub-component for feature list - prevents unnecessary re-renders
+const FeatureList = memo(function FeatureList() {
+  return (
+    <div className="mt-8 space-y-2.5">
+      {FEATURES.map((line) => (
+        <div key={line} className="flex items-center gap-2 text-sm text-text-primary">
+          <div className="w-1.5 h-1.5 rounded-full bg-accent-blue" />
+          {line}
+        </div>
+      ))}
+    </div>
+  )
+})
+
+// ✅ Memoized sidebar - static content that never changes
+const Sidebar = memo(function Sidebar() {
+  return (
+    <div className="hidden lg:flex border-r border-kai-border p-10 xl:p-14 bg-bg-secondary">
+      <div className="max-w-md self-center">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs text-accent-blue bg-accent-blue/10 border border-accent-blue/20 mb-4">
+          <ShieldCheck size={12} /> Secure Sign-In
+        </div>
+        <h1 className="text-3xl xl:text-4xl font-heading font-bold tracking-tight text-text-primary leading-tight">
+          Continue your placement sprint with KAI
+        </h1>
+        <p className="text-text-muted text-sm mt-4 leading-relaxed">
+          Manage daily goals, complete assessments, and track readiness from one workspace designed for interview-focused execution.
+        </p>
+        <FeatureList />
+      </div>
+    </div>
+  )
+})
+
+// ✅ Memoized mobile header
+const MobileHeader = memo(function MobileHeader() {
+  return (
+    <div className="text-center mb-6 lg:hidden">
+      <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-neutral-800 to-neutral-950 mb-3 text-white font-bold text-sm">
+        K
+      </div>
+      <h1 className="text-xl font-bold text-text-primary">Welcome to KAI</h1>
+      <p className="text-text-muted text-sm mt-1">Structured preparation workspace</p>
+    </div>
+  )
+})
+
+// ✅ Memoized mode toggle buttons
+const ModeToggle = memo(function ModeToggle({ mode, onModeChange }) {
+  return (
+    <div className="flex rounded-lg bg-bg-tertiary border border-kai-border p-1 mb-5">
+      {MODE_OPTIONS.map((m) => (
+        <button
+          key={m}
+          onClick={() => onModeChange(m)}
+          className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === m
+            ? 'bg-accent-blue text-white'
+            : 'text-text-muted hover:text-text-primary'
+            }`}
+        >
+          {m === 'signin' ? 'Sign In' : 'Create Account'}
+        </button>
+      ))}
+    </div>
+  )
+})
+
+// ✅ Memoized password toggle button
+const PasswordToggle = memo(function PasswordToggle({ showPwd, onToggle }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="hover:text-text-primary transition-colors"
+    >
+      {showPwd ? <EyeOff size={14} /> : <Eye size={14} />}
+    </button>
+  )
+})
+
 export default function AuthPage() {
   const { user, loading } = useContext(AuthContext)
-  const [mode, setMode] = useState('signin') // signin | signup
+  const [mode, setMode] = useState('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [showPwd, setShowPwd] = useState(false)
   const [busy, setBusy] = useState('')
 
-  if (!loading && user) return <Navigate to="/dashboard" replace />
+  // ✅ Memoized icon elements - prevents recreation
+  const mailIcon = useMemo(() => <Mail size={14} />, [])
+  const chromeIcon = useMemo(() => <Chrome size={15} />, [])
+  const githubIcon = useMemo(() => <Github size={15} />, [])
 
-  const handle = async (fn, provider) => {
+  // ✅ Memoized handler with useCallback - stable reference
+  const handle = useCallback(async (fn, provider) => {
     setBusy(provider)
     try {
       await fn()
@@ -36,73 +138,74 @@ export default function AuthPage() {
     } finally {
       setBusy('')
     }
-  }
+  }, [])
 
-  const handleEmail = () => {
-    if (!email || !password) return toast.error('Fill in all fields')
-    if (mode === 'signup' && !name) return toast.error('Enter your name')
+  // ✅ Memoized email handler
+  const handleEmail = useCallback(() => {
+    if (!email || !password) {
+      toast.error('Fill in all fields')
+      return
+    }
+    if (mode === 'signup' && !name) {
+      toast.error('Enter your name')
+      return
+    }
     handle(
-      () => mode === 'signup' ? signUpEmail(email, password) : signInEmail(email, password),
+      () => (mode === 'signup' ? signUpEmail(email, password) : signInEmail(email, password)),
       'email'
     )
-  }
+  }, [email, password, mode, name, handle])
+
+  // ✅ Memoized OAuth handlers - stable references for Button components
+  const handleGoogle = useCallback(() => handle(signInWithGoogle, 'google'), [handle])
+  const handleGithub = useCallback(() => handle(signInWithGithub, 'github'), [handle])
+
+  // ✅ Memoized input handlers - prevents child re-renders
+  const handleEmailChange = useCallback((e) => setEmail(e.target.value), [])
+  const handlePasswordChange = useCallback((e) => setPassword(e.target.value), [])
+  const handleNameChange = useCallback((e) => setName(e.target.value), [])
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === 'Enter') handleEmail()
+    },
+    [handleEmail]
+  )
+  const togglePassword = useCallback(() => setShowPwd((v) => !v), [])
+
+  // ✅ Memoized password toggle component
+  const passwordToggle = useMemo(
+    () => <PasswordToggle showPwd={showPwd} onToggle={togglePassword} />,
+    [showPwd, togglePassword]
+  )
+
+  // ✅ Early return after hooks (React rules compliant)
+  if (!loading && user) return <Navigate to="/dashboard" replace />
+
+  const isSignUp = mode === 'signup'
+  const buttonText = isSignUp ? 'Create Account' : 'Sign In'
 
   return (
-    <div className="min-h-screen bg-[#F6F8FB] grid lg:grid-cols-2">
-      <div className="hidden lg:flex border-r border-[#D9E2EC] p-10 xl:p-14 bg-[#FFFFFF]">
-        <div className="max-w-md self-center">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs text-[#4F8EF7] bg-[#4F8EF7]/10 border border-[#4F8EF7]/20 mb-4">
-            <ShieldCheck size={12} /> Secure Sign-In
-          </div>
-          <h1 className="text-3xl xl:text-4xl font-heading font-bold tracking-tight text-[#0F172A] leading-tight">
-            Continue your placement sprint with KAI
-          </h1>
-          <p className="text-[#64748B] text-sm mt-4 leading-relaxed">
-            Manage daily goals, complete assessments, and track readiness from one workspace designed for interview-focused execution.
-          </p>
-          <div className="mt-8 space-y-2.5">
-            {[
-              'Roadmap with daily execution',
-              'Coding + quiz + interview simulation',
-              'Resume and readiness scoring',
-            ].map((line) => (
-              <div key={line} className="flex items-center gap-2 text-sm text-[#0F172A]">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#4F8EF7]" />
-                {line}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-bg-primary grid lg:grid-cols-2">
+      <Sidebar />
 
       <div className="flex items-center justify-center px-4 py-8">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
-          <div className="text-center mb-6 lg:hidden">
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-[#4F8EF7] to-[#8B5CF6] mb-3 text-white font-bold text-sm">K</div>
-            <h1 className="text-xl font-bold text-[#0F172A]">Welcome to KAI</h1>
-            <p className="text-[#64748B] text-sm mt-1">Structured preparation workspace</p>
-          </div>
+        <motion.div
+          initial={fadeInUp}
+          animate={fadeInUpAnimate}
+          className="w-full max-w-md"
+        >
+          <MobileHeader />
 
-          <div className="card p-6 bg-[#FFFFFF]">
-            <div className="flex rounded-lg bg-[#F8FAFC] border border-[#D9E2EC] p-1 mb-5">
-            {['signin', 'signup'].map(m => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === m ? 'bg-[#4F8EF7] text-white' : 'text-[#64748B] hover:text-[#0F172A]'}`}
-              >
-                {m === 'signin' ? 'Sign In' : 'Create Account'}
-              </button>
-            ))}
-          </div>
+          <div className="card p-6">
+            <ModeToggle mode={mode} onModeChange={setMode} />
 
             <div className="space-y-2.5 mb-5">
               <Button
                 variant="secondary"
                 className="w-full"
                 loading={busy === 'google'}
-                onClick={() => handle(signInWithGoogle, 'google')}
-                leftIcon={<Chrome size={15} />}
+                onClick={handleGoogle}
+                leftIcon={chromeIcon}
               >
                 Continue with Google
               </Button>
@@ -110,28 +213,34 @@ export default function AuthPage() {
                 variant="secondary"
                 className="w-full"
                 loading={busy === 'github'}
-                onClick={() => handle(signInWithGithub, 'github')}
-                leftIcon={<Github size={15} />}
+                onClick={handleGithub}
+                leftIcon={githubIcon}
               >
                 Continue with GitHub
               </Button>
             </div>
 
             <div className="relative flex items-center gap-3 mb-5">
-              <div className="flex-1 h-px bg-[#D9E2EC]" />
-              <span className="text-[11px] text-[#64748B]">or use email</span>
-              <div className="flex-1 h-px bg-[#D9E2EC]" />
+              <div className="flex-1 h-px bg-kai-border" />
+              <span className="text-[11px] text-text-muted">or use email</span>
+              <div className="flex-1 h-px bg-kai-border" />
             </div>
 
             <div className="space-y-3.5">
-              <AnimatePresence>
-                {mode === 'signup' && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+              <AnimatePresence mode="wait">
+                {isSignUp && (
+                  <motion.div
+                    key="name-field"
+                    variants={nameFieldVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                  >
                     <Input
                       label="Full Name"
                       placeholder="Your full name"
                       value={name}
-                      onChange={e => setName(e.target.value)}
+                      onChange={handleNameChange}
                     />
                   </motion.div>
                 )}
@@ -142,8 +251,8 @@ export default function AuthPage() {
                 type="email"
                 placeholder="you@college.edu"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
-                leftIcon={<Mail size={14} />}
+                onChange={handleEmailChange}
+                leftIcon={mailIcon}
               />
 
               <Input
@@ -151,21 +260,21 @@ export default function AuthPage() {
                 type={showPwd ? 'text' : 'password'}
                 placeholder="Enter password"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleEmail()}
-                rightIcon={
-                  <button type="button" onClick={() => setShowPwd(v => !v)} className="hover:text-[#0F172A] transition-colors">
-                    {showPwd ? <EyeOff size={14} /> : <Eye size={14} />}
-                  </button>
-                }
+                onChange={handlePasswordChange}
+                onKeyDown={handleKeyDown}
+                rightIcon={passwordToggle}
               />
 
-              <Button className="w-full" loading={busy === 'email'} onClick={handleEmail}>
-                {mode === 'signin' ? 'Sign In' : 'Create Account'}
+              <Button
+                className="w-full"
+                loading={busy === 'email'}
+                onClick={handleEmail}
+              >
+                {buttonText}
               </Button>
             </div>
 
-            <p className="text-[11px] text-[#64748B] text-center mt-4">
+            <p className="text-[11px] text-text-muted text-center mt-4">
               By continuing, you agree to Terms and Privacy Policy.
             </p>
           </div>

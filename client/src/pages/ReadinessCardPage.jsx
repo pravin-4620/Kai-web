@@ -12,19 +12,19 @@ import { getGrade } from '../lib/utils'
 import { toast } from 'react-hot-toast'
 
 const MODULES = [
-  { key: 'coding', label: 'Coding', icon: Code2, color: '#a855f7', weight: '35%' },
-  { key: 'quiz', label: 'Quiz', icon: Brain, color: '#eab308', weight: '25%' },
-  { key: 'interview', label: 'Interview', icon: MessageSquare, color: '#3b82f6', weight: '20%' },
-  { key: 'softSkills', label: 'Soft Skills', icon: Smile, color: '#22c55e', weight: '10%' },
-  { key: 'resume', label: 'Resume', icon: FileText, color: '#ef4444', weight: '5%' },
+  { key: 'coding', label: 'Coding', icon: Code2, color: '#d4d4d4', weight: '35%' },
+  { key: 'quiz', label: 'Quiz', icon: Brain, color: '#a3a3a3', weight: '25%' },
+  { key: 'interview', label: 'Interview', icon: MessageSquare, color: '#ffffff', weight: '20%' },
+  { key: 'softSkills', label: 'Soft Skills', icon: Smile, color: '#ffffff', weight: '10%' },
+  { key: 'resume', label: 'Resume', icon: FileText, color: '#a3a3a3', weight: '5%' },
 ]
 
 function gradeColor(grade) {
-  if (!grade) return '#6b7280'
-  if (grade.startsWith('A')) return '#22c55e'
-  if (grade.startsWith('B')) return '#3b82f6'
-  if (grade.startsWith('C')) return '#eab308'
-  return '#ef4444'
+  if (!grade) return '#a3a3a3'
+  if (grade.startsWith('A')) return '#ffffff'
+  if (grade.startsWith('B')) return '#ffffff'
+  if (grade.startsWith('C')) return '#a3a3a3'
+  return '#a3a3a3'
 }
 
 export default function ReadinessCardPage() {
@@ -36,7 +36,7 @@ export default function ReadinessCardPage() {
   const download = async () => {
     if (!cardRef.current) return
     toast.loading('Generating card...')
-    const canvas = await html2canvas(cardRef.current, { scale: 3, backgroundColor: '#0A0E1A' })
+    const canvas = await html2canvas(cardRef.current, { scale: 3, backgroundColor: '#000000' })
     const link = document.createElement('a')
     link.download = `kai-readiness-${profile?.name?.replace(/\s+/g, '-') || 'card'}.png`
     link.href = canvas.toDataURL('image/png')
@@ -48,7 +48,7 @@ export default function ReadinessCardPage() {
   const shareCard = async () => {
     if (!cardRef.current) return
     try {
-      const canvas = await html2canvas(cardRef.current, { scale: 2, backgroundColor: '#0A0E1A' })
+      const canvas = await html2canvas(cardRef.current, { scale: 2, backgroundColor: '#000000' })
       canvas.toBlob(async (blob) => {
         if (navigator.share && blob) {
           await navigator.share({ title: 'My KAI Placement Readiness Card', files: [new File([blob], 'kai-card.png', { type: 'image/png' })] })
@@ -76,13 +76,13 @@ export default function ReadinessCardPage() {
             {/* THE CARD */}
             <motion.div ref={cardRef} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               className="w-full aspect-[9/16] max-w-sm mx-auto rounded-3xl overflow-hidden"
-              style={{ background: 'linear-gradient(135deg, #0A0E1A 0%, #0f1628 50%, #0A0E1A 100%)', border: '1px solid rgba(59,130,246,0.3)', fontFamily: 'Inter, sans-serif', boxShadow: '0 0 60px rgba(59,130,246,0.15)' }}
+              style={{ background: 'linear-gradient(135deg, #000000 0%, #171717 50%, #000000 100%)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: 'Inter, sans-serif', boxShadow: '0 0 60px rgba(255,255,255,0.1)' }}
             >
               <div className="h-full flex flex-col p-6">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">K</div>
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-xs font-bold">K</div>
                     <span className="text-white font-bold text-sm">KAI</span>
                   </div>
                   <span className="text-xs text-gray-500">Placement Readiness</span>
@@ -90,7 +90,7 @@ export default function ReadinessCardPage() {
 
                 {/* Avatar + name */}
                 <div className="text-center mb-6">
-                  <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold mb-3 ring-4 ring-blue-500/20">
+                  <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-2xl font-bold mb-3 ring-4 ring-gray-700/50">
                     {profile?.name?.charAt(0)?.toUpperCase() || 'K'}
                   </div>
                   <p className="text-white font-bold text-lg">{profile?.name || 'KAI Student'}</p>
@@ -106,7 +106,7 @@ export default function ReadinessCardPage() {
                       <circle cx="60" cy="60" r="50" fill="none" stroke={gradeColor(grade)} strokeWidth="8"
                         strokeDasharray={`${(overallScore / 100) * 314} 314`} strokeLinecap="round" transform="rotate(-90 60 60)" strokeDashoffset="0" />
                       <text x="60" y="55" textAnchor="middle" fill="white" fontSize="26" fontWeight="bold" dy="0.3em">{Math.round(overallScore ?? 0)}</text>
-                      <text x="60" y="77" textAnchor="middle" fill="#94a3b8" fontSize="11">/ 100</text>
+                      <text x="60" y="77" textAnchor="middle" fill="#a3a3a3" fontSize="11">/ 100</text>
                     </svg>
                   </div>
                   <p className="text-4xl font-bold mt-1" style={{ color: gradeColor(grade) }}>{grade || 'F'}</p>
@@ -129,7 +129,7 @@ export default function ReadinessCardPage() {
 
                 {/* Footer */}
                 <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-orange-400 text-xs">
+                  <div className="flex items-center gap-1 text-gray-400 text-xs">
                     <Flame size={12} />
                     {profile?.progress?.streak ?? 0} day streak
                   </div>

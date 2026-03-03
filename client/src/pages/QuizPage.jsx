@@ -12,9 +12,9 @@ import { toast } from 'react-hot-toast'
 
 const SLOT_ICONS = { morning: Sun, afternoon: Sunset, evening: Moon }
 const SLOT_COLORS = {
-  morning:   'from-amber-50 to-orange-50 border-amber-200',
-  afternoon: 'from-sky-50 to-blue-50 border-sky-200',
-  evening:   'from-indigo-50 to-purple-50 border-indigo-200',
+  morning:   'from-neutral-900 to-neutral-950 border-neutral-800',
+  afternoon: 'from-neutral-900 to-neutral-950 border-neutral-800',
+  evening:   'from-neutral-900 to-neutral-950 border-neutral-800',
 }
 
 function fmtTimer(sec) {
@@ -146,9 +146,9 @@ export default function QuizPage() {
               <motion.div key="schedule" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="max-w-3xl mx-auto">
                 <div className="flex items-center gap-3 mb-2">
                   <Brain size={24} className="text-accent-blue" />
-                  <h2 className="text-xl font-bold text-[#0F172A]">Daily Scheduled Tests</h2>
+                  <h2 className="text-xl font-bold text-text-primary">Daily Scheduled Tests</h2>
                 </div>
-                <p className="text-sm text-[#64748B] mb-6">3 tests per day, 40 mixed-topic questions each. Tests open only during their scheduled window.</p>
+                <p className="text-sm text-text-muted mb-6">3 tests per day, 40 mixed-topic questions each. Tests open only during their scheduled window.</p>
 
                 <div className="grid gap-4 mb-8">
                   {schedule.map(slot => {
@@ -156,7 +156,7 @@ export default function QuizPage() {
                     const colors = SLOT_COLORS[slot.id] || SLOT_COLORS.morning
                     const canStart = slot.isOpen && !slot.attempted
                     const statusLabel = slot.attempted ? 'Completed' : slot.isOpen ? 'Open Now' : slot.isPast ? 'Closed' : `Opens in ${slot.opensIn} min`
-                    const statusCls = slot.attempted ? 'text-green-600 bg-green-50' : slot.isOpen ? 'text-accent-blue bg-blue-50' : 'text-[#64748B] bg-[#F1F5F9]'
+                    const statusCls = slot.attempted ? 'text-neutral-400 bg-neutral-800' : slot.isOpen ? 'text-accent-blue bg-neutral-800' : 'text-text-muted bg-bg-tertiary'
 
                     return (
                       <Card key={slot.id} className={`p-5 bg-gradient-to-r ${colors} relative overflow-hidden`}>
@@ -171,21 +171,21 @@ export default function QuizPage() {
                               <Icon size={22} className="text-accent-blue" />
                             </div>
                             <div>
-                              <h3 className="font-semibold text-[#0F172A] text-base">{slot.label}</h3>
-                              <p className="text-sm text-[#64748B]">{slot.timeRange}</p>
-                              <p className="text-xs text-[#94A3B8] mt-0.5">40 questions | 40 min | All topics</p>
+                              <h3 className="font-semibold text-text-primary text-base">{slot.label}</h3>
+                              <p className="text-sm text-text-muted">{slot.timeRange}</p>
+                              <p className="text-xs text-[#a3a3a3] mt-0.5">40 questions | 40 min | All topics</p>
                             </div>
                           </div>
                           <div className="flex flex-col items-end gap-2">
                             <span className={`text-xs font-semibold px-3 py-1 rounded-full ${statusCls}`}>{statusLabel}</span>
                             {slot.attempted && slot.score !== null && (
-                              <span className="text-sm font-bold text-green-600">{slot.score}%</span>
+                              <span className="text-sm font-bold text-neutral-400">{slot.score}%</span>
                             )}
                             {canStart && (
                               <Button size="sm" onClick={() => startTest(slot.id)}>Start Test</Button>
                             )}
                             {!slot.isOpen && !slot.attempted && !slot.isPast && (
-                              <div className="flex items-center gap-1 text-[#94A3B8]">
+                              <div className="flex items-center gap-1 text-[#a3a3a3]">
                                 <Lock size={14} />
                                 <span className="text-xs">Locked</span>
                               </div>
@@ -197,24 +197,24 @@ export default function QuizPage() {
                   })}
                   {schedule.length === 0 && (
                     <Card className="p-8 text-center">
-                      <p className="text-[#64748B]">Loading schedule...</p>
+                      <p className="text-text-muted">Loading schedule...</p>
                     </Card>
                   )}
                 </div>
 
                 {history.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-semibold text-[#64748B] mb-3">Recent Attempts</h3>
+                    <h3 className="text-sm font-semibold text-text-muted mb-3">Recent Attempts</h3>
                     <div className="space-y-2">
                       {history.slice(0, 5).map(a => (
-                        <div key={a._id} className="flex items-center justify-between p-3 rounded-lg bg-[#F1F5F9] border border-[#D9E2EC]">
+                        <div key={a._id} className="flex items-center justify-between p-3 rounded-lg bg-bg-tertiary border border-kai-border">
                           <div>
-                            <span className="text-sm text-[#0F172A]">{a.topic || 'Scheduled Test'}</span>
-                            {a.slotId && <span className="text-xs text-[#94A3B8] ml-2">({a.slotId})</span>}
+                            <span className="text-sm text-text-primary">{a.topic || 'Scheduled Test'}</span>
+                            {a.slotId && <span className="text-xs text-[#a3a3a3] ml-2">({a.slotId})</span>}
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className="text-xs text-[#64748B]">{new Date(a.completedAt).toLocaleDateString()}</span>
-                            <span className="text-sm font-semibold text-[#0F172A]">{a.score}%</span>
+                            <span className="text-xs text-text-muted">{new Date(a.completedAt).toLocaleDateString()}</span>
+                            <span className="text-sm font-semibold text-text-primary">{a.score}%</span>
                           </div>
                         </div>
                       ))}
@@ -230,8 +230,8 @@ export default function QuizPage() {
                 {/* Top bar: progress + overall timer */}
                 <div className="flex items-center gap-4 mb-6">
                   <Progress value={current + 1} max={totalQ} className="flex-1" color="blue" />
-                  <span className="text-sm text-[#64748B] whitespace-nowrap">{current + 1}/{totalQ}</span>
-                  <div className={`flex items-center gap-1 text-sm font-mono font-bold ${timeLeft <= 120 ? 'text-red-500' : 'text-accent-blue'}`}>
+                  <span className="text-sm text-text-muted whitespace-nowrap">{current + 1}/{totalQ}</span>
+                  <div className={`flex items-center gap-1 text-sm font-mono font-bold ${timeLeft <= 120 ? 'text-neutral-400' : 'text-accent-blue'}`}>
                     <Timer size={14} />
                     {fmtTimer(timeLeft)}
                   </div>
@@ -239,27 +239,27 @@ export default function QuizPage() {
 
                 {q.topic && (
                   <div className="mb-2">
-                    <Badge className="text-[10px] bg-[#F1F5F9] text-[#64748B] border border-[#D9E2EC]">{q.topic}</Badge>
+                    <Badge className="text-[10px] bg-bg-tertiary text-text-muted border border-kai-border">{q.topic}</Badge>
                   </div>
                 )}
 
                 <Card className="mb-4">
                   <div className="flex items-start justify-between gap-4 mb-6">
-                    <h3 className="text-base font-semibold text-[#0F172A] leading-relaxed">{q.question}</h3>
+                    <h3 className="text-base font-semibold text-text-primary leading-relaxed">{q.question}</h3>
                   </div>
 
                   <div className="space-y-2">
                     {q.options?.map((opt, i) => {
-                      let cls = 'border-[#D9E2EC] text-[#475569] hover:border-[#B8C8DB] hover:bg-[#F1F5F9]'
+                      let cls = 'border-kai-border text-text-secondary hover:border-accent-blue hover:bg-bg-tertiary'
                       if (selected !== null) {
-                        if (opt === q.correct) cls = 'border-green-500/50 bg-green-500/10 text-green-600'
-                        else if (opt === selected) cls = 'border-red-500/50 bg-red-500/10 text-red-600'
+                        if (opt === q.correct) cls = 'border-neutral-400/50 bg-neutral-800/50 text-neutral-400'
+                        else if (opt === selected) cls = 'border-neutral-400/50 bg-neutral-800/50 text-neutral-400'
                       }
                       return (
                         <button key={i} onClick={() => handleAnswer(opt)} disabled={selected !== null}
                           className={`w-full text-left px-4 py-3 rounded-lg border text-sm transition-all ${cls}`}
                         >
-                          <span className="font-medium text-[#64748B] mr-3">{String.fromCharCode(65 + i)}.</span>
+                          <span className="font-medium text-text-muted mr-3">{String.fromCharCode(65 + i)}.</span>
                           {opt}
                         </button>
                       )
@@ -269,7 +269,7 @@ export default function QuizPage() {
                   {showExplain && q.explanation && (
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-4 p-3 rounded-lg bg-accent-blue/10 border border-accent-blue/20">
                       <p className="text-xs text-accent-blue font-semibold mb-1">Explanation</p>
-                      <p className="text-sm text-[#475569]">{q.explanation}</p>
+                      <p className="text-sm text-text-secondary">{q.explanation}</p>
                     </motion.div>
                   )}
                 </Card>
@@ -285,37 +285,37 @@ export default function QuizPage() {
             {/* ─── Result Phase ─────────────────────────────── */}
             {phase === 'result' && result && (
               <motion.div key="result" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="max-w-xl mx-auto text-center">
-                <div className="w-16 h-16 rounded-2xl bg-[#F1F5F9] border border-[#D9E2EC] flex items-center justify-center mx-auto mb-4">
-                  {result.score >= 80 ? <Award size={28} className="text-[#FBBF24]" /> : result.score >= 60 ? <CheckCircle2 size={28} className="text-[#4F8EF7]" /> : <BookOpen size={28} className="text-[#64748B]" />}
+                <div className="w-16 h-16 rounded-2xl bg-bg-tertiary border border-kai-border flex items-center justify-center mx-auto mb-4">
+                  {result.score >= 80 ? <Award size={28} className="text-[#a3a3a3]" /> : result.score >= 60 ? <CheckCircle2 size={28} className="text-accent-blue" /> : <BookOpen size={28} className="text-text-muted" />}
                 </div>
-                <h2 className="text-2xl font-bold text-[#0F172A] mb-1">Test Complete</h2>
-                <p className="text-[#64748B] mb-6">{quiz?.slotLabel || 'Scheduled Test'}</p>
+                <h2 className="text-2xl font-bold text-text-primary mb-1">Test Complete</h2>
+                <p className="text-text-muted mb-6">{quiz?.slotLabel || 'Scheduled Test'}</p>
 
                 <Card className="mb-6">
                   <div className="grid grid-cols-3 gap-4 text-center mb-4">
                     <div>
                       <p className="text-3xl font-bold text-accent-blue">{result.score ?? 0}%</p>
-                      <p className="text-xs text-[#64748B] mt-1">Score</p>
+                      <p className="text-xs text-text-muted mt-1">Score</p>
                     </div>
                     <div>
-                      <p className="text-3xl font-bold text-green-500">{result.correct ?? 0}</p>
-                      <p className="text-xs text-[#64748B] mt-1">Correct</p>
+                      <p className="text-3xl font-bold text-neutral-400">{result.correct ?? 0}</p>
+                      <p className="text-xs text-text-muted mt-1">Correct</p>
                     </div>
                     <div>
-                      <p className="text-3xl font-bold text-red-500">{result.incorrect ?? 0}</p>
-                      <p className="text-xs text-[#64748B] mt-1">Wrong</p>
+                      <p className="text-3xl font-bold text-neutral-400">{result.incorrect ?? 0}</p>
+                      <p className="text-xs text-text-muted mt-1">Wrong</p>
                     </div>
                   </div>
 
                   {/* Per-topic breakdown */}
                   {result.topicBreakdown && Object.keys(result.topicBreakdown).length > 0 && (
-                    <div className="border-t border-[#D9E2EC] pt-4">
-                      <p className="text-xs font-semibold text-[#64748B] mb-3 text-left">Topic Breakdown</p>
+                    <div className="border-t border-kai-border pt-4">
+                      <p className="text-xs font-semibold text-text-muted mb-3 text-left">Topic Breakdown</p>
                       <div className="grid grid-cols-2 gap-2">
                         {Object.entries(result.topicBreakdown).map(([topic, { correct: c, total: t }]) => (
-                          <div key={topic} className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#F1F5F9] text-left">
-                            <span className="text-xs text-[#475569] truncate">{topic}</span>
-                            <span className={`text-xs font-bold ${t > 0 && c / t >= 0.5 ? 'text-green-600' : 'text-red-500'}`}>{c}/{t}</span>
+                          <div key={topic} className="flex items-center justify-between px-3 py-2 rounded-lg bg-bg-tertiary text-left">
+                            <span className="text-xs text-text-secondary truncate">{topic}</span>
+                            <span className={`text-xs font-bold ${t > 0 && c / t >= 0.5 ? 'text-neutral-400' : 'text-neutral-400'}`}>{c}/{t}</span>
                           </div>
                         ))}
                       </div>
@@ -323,9 +323,9 @@ export default function QuizPage() {
                   )}
 
                   {result.attempt?.aiInsight && (
-                    <div className="mt-4 p-3 rounded-lg bg-[#F1F5F9] border border-[#D9E2EC] text-left">
-                      <p className="text-xs text-[#64748B] mb-1 flex items-center gap-1"><Sparkles size={10} />AI Insight</p>
-                      <p className="text-sm text-[#475569]">{result.attempt.aiInsight}</p>
+                    <div className="mt-4 p-3 rounded-lg bg-bg-tertiary border border-kai-border text-left">
+                      <p className="text-xs text-text-muted mb-1 flex items-center gap-1"><Sparkles size={10} />AI Insight</p>
+                      <p className="text-sm text-text-secondary">{result.attempt.aiInsight}</p>
                     </div>
                   )}
                 </Card>

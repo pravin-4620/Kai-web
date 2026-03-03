@@ -1,14 +1,14 @@
 import { cn } from '../../lib/utils'
 
 const COLOR_MAP = {
-  blue:   { bar: 'bg-[#4F8EF7]', text: 'text-[#4F8EF7]' },
-  purple: { bar: 'bg-[#8B5CF6]', text: 'text-[#8B5CF6]' },
-  green:  { bar: 'bg-[#3FB950]', text: 'text-[#3FB950]' },
-  yellow: { bar: 'bg-[#FBBF24]', text: 'text-[#FBBF24]' },
-  orange: { bar: 'bg-[#FB8F44]', text: 'text-[#FB8F44]' },
-  red:    { bar: 'bg-[#F85149]', text: 'text-[#F85149]' },
+  blue:   { bar: 'bg-accent-blue', text: 'text-accent-blue' },
+  purple: { bar: 'bg-[#d4d4d4]', text: 'text-[#d4d4d4]' },
+  green:  { bar: 'bg-accent-green', text: 'text-accent-green' },
+  yellow: { bar: 'bg-[#a3a3a3]', text: 'text-[#a3a3a3]' },
+  orange: { bar: 'bg-[#d4d4d4]', text: 'text-[#d4d4d4]' },
+  red:    { bar: 'bg-[#a3a3a3]', text: 'text-[#a3a3a3]' },
   cyan:   { bar: 'bg-[#22D3EE]', text: 'text-[#22D3EE]' },
-  default:{ bar: 'bg-[#4F8EF7]', text: 'text-[#4F8EF7]' },
+  default:{ bar: 'bg-accent-blue', text: 'text-accent-blue' },
 }
 
 export default function Progress({ value = 0, max = 100, label, showLabel = false, color = 'default', size = 'sm', className }) {
